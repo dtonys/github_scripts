@@ -1,5 +1,5 @@
 # github_scripts
-Convenience scripts to delete / create repo from command line
+Convenience scripts to delete / create repo from command line, using github api.
 
 ## Commands
 
