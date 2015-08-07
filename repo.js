@@ -1,20 +1,10 @@
-// create or delete a repo
-// node repo.js
-  // -c <command>
-    // create <new_repo_name> <existing_repo_path> -u <username> -p password
-    // delete <existing_repo_name> -u <username> -p password
-
 var child_process = require('child_process');
-
 var GitApi = require("github");
-
 var args = require('minimist')(process.argv.slice(2))
 
 var github = new GitApi({
   version: "3.0.0",
 });
-
-console.log(args);
 
 switch( args['c'] ){
   case 'create': _create(); break;
@@ -51,5 +41,4 @@ function _delete(){
   github.repos.delete({ user: args['u'], repo: existing_repo }, function(err, res){
     console.log('deleted repo "'+existing_repo+'"');
   });
-
 }
