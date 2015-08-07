@@ -34,7 +34,6 @@ function _create(){
 }
 
 function _delete(){
-  var existing_repo_name = args['_'][1];
   _auth();
 
   var existing_repo = args['_'][0];
