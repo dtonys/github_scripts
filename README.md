@@ -4,7 +4,7 @@ Convenience scripts to delete / create repo locally + on github, from command li
 ## Commands
 
 ### Create new github repo from master branch of existing local one
-node repo.js create \<newrepo_name\> \<local_repo_to_copy\>
+node repo.js create \<newrepo_name\> \<local_directory_containing_repo\>
 
 ### Delete an existing repo ( both locally + on github )
 node repo.js delete \<reponame\> \<local_repo_path\>
