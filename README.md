@@ -1,10 +1,10 @@
 # github_scripts
-Convenience scripts to delete / create repo from command line, using github api.
+Convenience scripts to delete / create repo locally + on github, from command line, using github api.
 
 ## Commands
 
-### Create Repo from master branch of existing repo
-node repo.js -c create \<newrepo\> \<oldrepo_path\> -u \<username\> -p \<password\>
+### Create new github repo from master branch of existing local one
+node repo.js -c create \<newrepo_name\> \<local_repo_to_copy\>
 
-### Delete an existing repo
-node repo.js -c delete \<reponame\> -u \<username\> -p \<password\>
+### Delete an existing repo ( both locally + on github )
+node repo.js -c delete \<reponame\> \<local_repo_path\>
