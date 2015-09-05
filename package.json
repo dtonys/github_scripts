@@ -1,16 +1,17 @@
 {
-  "name": "create_repo",
+  "name": "github_scripts",
   "version": "1.0.0",
-  "description": "",
-  "main": "create_repo.js",
+  "description": "Utility scripts to create / delete repos using github API",
+  "main": "repo.js",
   "dependencies": {
     "github": "^0.2.4",
-    "minimist": "^1.1.3"
+    "minimist": "^1.1.3",
+    "prompt": "^0.2.14"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Tony Schwartz",
   "license": "ISC"
 }

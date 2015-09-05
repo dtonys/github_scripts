@@ -1,43 +1,59 @@
 var child_process = require('child_process');
 var GitApi = require("github");
-var args = require('minimist')(process.argv.slice(2))
+var args = require('minimist')(process.argv.slice(2));
+var prompt = require('prompt');
 
 var github = new GitApi({
   version: "3.0.0",
 });
 
-switch( args['c'] ){
-  case 'create': _create(); break;
-  case 'delete': _delete(); break;
+main();
+
+function main(){
+  _auth();
+
+  switch( args['_'][0] ){
+    case 'create': _create(); break;
+    case 'delete': _delete(); break;
+  }
 }
 
 function _auth(){
-  github.authenticate({
-    type: "basic",
-    username: args['u'],
-    password: args['p']
+  prompt.start();
+  prompt.get(['username', 'password'], function (err, result) {
+    github.authenticate({
+      type: "basic",
+      username: result.username,
+      password: result.password
+    });
   });
 }
 
 function _create(){
-  _auth();
+  var new_repo = args['_'][1];
+  var existing_repo_path = args['_'][2];
+  var branch = args['b'] || 'master';
 
-  var new_repo = args['_'][0];
-  var existing_repo_path = args['_'][1];
-
+  // create new remote
   github.repos.create({ name: new_repo }, function(err, res){
-    child_process.execSync('cd '+existing_repo_path+' && git push git@github.com:'+res.full_name+' +master:master');
-    child_process.execSync('git clone '+res.html_url);
+    // push local branch to remote
+    child_process.execSync('cd '+existing_repo_path+' && git push git@github.com:'+res.full_name+' +'+branch+':master');
+    // delete local existing + pull newly created
+    child_process.execSync('rm -rf '+new_repo+' && git clone '+res.html_url);
     console.log('created new repo "'+new_repo+'" from existing repo "'+existing_repo_path+'"\'s master branch');
   });
-
 }
 
+// delete 
 function _delete(){
-  _auth();
+  var existing_repo = args['_'][1];
+  var existing_repo_path = args['_'][2];
+  var rm_path = existing_repo_path || existing_repo;
 
-  var existing_repo = args['_'][0];
+  // delete github repo
   github.repos.delete({ user: args['u'], repo: existing_repo }, function(err, res){
+    // delete local repo
+    child_process.execSync('rm -rf '+rm_path );
     console.log('deleted repo "'+existing_repo+'"');
   });
 }
