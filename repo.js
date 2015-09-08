@@ -9,23 +9,35 @@ var github = new GitApi({
 
 main();
 
-function main(){
-  _auth();
+var username;
 
-  switch( args['_'][0] ){
-    case 'create': _create(); break;
-    case 'delete': _delete(); break;
-  }
+function main(){
+  _auth( function(){
+    switch( args['_'][0] ){
+      case 'create': _create(); break;
+      case 'delete': _delete(); break;
+    }
+  });
 }
 
-function _auth(){
+function _auth( cb ){
   prompt.start();
-  prompt.get(['username', 'password'], function (err, result) {
+  var schema = {
+    properties: {
+      username: {},
+      password: {
+        hidden: true
+      }
+    }
+  };
+  prompt.get(schema, function (err, result) {
+    username = result.username;
     github.authenticate({
       type: "basic",
       username: result.username,
       password: result.password
     });
+    cb();
   });
 }
 
@@ -36,10 +48,13 @@ function _create(){
 
   // create new remote
   github.repos.create({ name: new_repo }, function(err, res){
+
+    console.log( JSON.stringify( res ) );
+
     // push local branch to remote
     child_process.execSync('cd '+existing_repo_path+' && git push git@github.com:'+res.full_name+' +'+branch+':master');
     // delete local existing + pull newly created
-    child_process.execSync('rm -rf '+new_repo+' && git clone '+res.html_url);
+    child_process.execSync('rm -rf '+new_repo+' && git clone '+res.ssh_url);
     console.log('created new repo "'+new_repo+'" from existing repo "'+existing_repo_path+'"\'s master branch');
   });
 }
@@ -51,7 +66,7 @@ function _delete(){
   var rm_path = existing_repo_path || existing_repo;
 
   // delete github repo
-  github.repos.delete({ user: args['u'], repo: existing_repo }, function(err, res){
+  github.repos.delete({ user: username, repo: existing_repo }, function(err, res){
     // delete local repo
     child_process.execSync('rm -rf '+rm_path );
     console.log('deleted repo "'+existing_repo+'"');
