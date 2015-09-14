@@ -1,4 +1,5 @@
 var child_process = require('child_process');
+var fs = require('fs')
 var GitApi = require("github");
 var args = require('minimist')(process.argv.slice(2));
 var prompt = require('prompt');
@@ -21,24 +22,45 @@ function main(){
 }
 
 function _auth( cb ){
-  prompt.start();
-  var schema = {
-    properties: {
-      username: {},
-      password: {
-        hidden: true
-      }
-    }
-  };
-  prompt.get(schema, function (err, result) {
-    username = result.username;
+  var token;
+
+  try{
+    token = fs.readFileSync(__dirname+'/token.txt', 'utf8');
+    useToken( token );
+  }catch(e){
+    console.log( e );
+    usePassword();
+  }
+
+  function useToken( token ){
     github.authenticate({
-      type: "basic",
-      username: result.username,
-      password: result.password
+      type: "oauth",
+      token: token
     });
     cb();
-  });
+  };
+
+  function usePassword(){
+    prompt.start();
+    var schema = {
+      properties: {
+        username: {},
+        password: {
+          hidden: true
+        }
+      }
+    };
+    prompt.get(schema, function (err, result) {
+      username = result.username;
+      github.authenticate({
+        type: "basic",
+        username: result.username,
+        password: result.password
+      });
+      cb();
+    });
+  }
+
 }
 
 function _create(){
@@ -48,7 +70,7 @@ function _create(){
 
   // create new remote
   github.repos.create({ name: new_repo }, function(err, res){
-
+    console.log( JSON.stringify( err ) );
     console.log( JSON.stringify( res ) );
 
     // push local branch to remote
@@ -64,9 +86,12 @@ function _delete(){
   var existing_repo = args['_'][1];
   var existing_repo_path = args['_'][2];
   var rm_path = existing_repo_path || existing_repo;
+  username = username || args['user'];
 
   // delete github repo
   github.repos.delete({ user: username, repo: existing_repo }, function(err, res){
+    console.log( JSON.stringify( err ) );
+    console.log( JSON.stringify( res ) );
     // delete local repo
     child_process.execSync('rm -rf '+rm_path );
     console.log('deleted repo "'+existing_repo+'"');
