@@ -1,3 +1,6 @@
+## NOTE: This project is deprecated, it should be re-built as a globally executable command line app
+
+
 # github_scripts
 Convenience scripts to delete / create repo locally + on github, from command line, using github api.
 
