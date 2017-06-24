@@ -1,4 +1,4 @@
-## NOTE: This project is deprecated, it should be re-built as a globally executable command line app
+## NOTE: This project is deprecated, it should be re-built as a globally executable node command line app
 
 
 # github_scripts
